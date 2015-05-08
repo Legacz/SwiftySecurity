@@ -10,7 +10,7 @@ Note: This requires Cocoa stuff, it is not a pure Swift framework.
 
 Uses Swift v0.2.0 (aka Xcode 6.3).
 
-The project includes three targets:
+The project includes a single target:
 - SwiftySecurity
 
 ###Why?!
