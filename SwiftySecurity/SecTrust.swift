@@ -30,7 +30,7 @@ public extension SecTrust {
     }
     get {
       var valueCopy : Unmanaged<CFArray>?
-      let status = SecTrustCopyCustomAnchorCertificates(self, &valueCopy)
+      let _         = SecTrustCopyCustomAnchorCertificates(self, &valueCopy)
       if valueCopy == nil { return [] }
       return valueCopy!.takeRetainedValue() as! [ SecCertificate ]
     }
@@ -39,7 +39,7 @@ public extension SecTrust {
   public var trustOwnCertificatesOnly : Bool? {
     set {
       let v : Boolean = (newValue ?? false) ? 1 : 0
-      let status = SecTrustSetAnchorCertificatesOnly(self, v)
+      let _ = SecTrustSetAnchorCertificatesOnly(self, v)
     }
     get {
       return nil // there is no getter for this?
@@ -60,7 +60,7 @@ public extension SecTrust {
   public static var anchorCertificates : [ SecCertificate ] {
     // those are the system certificates
     var valueCopy : Unmanaged<CFArray>?
-    let status = SecTrustCopyAnchorCertificates(&valueCopy)
+    let _         = SecTrustCopyAnchorCertificates(&valueCopy)
     if valueCopy == nil { return [] }
     return valueCopy!.takeRetainedValue() as! [ SecCertificate ]
   }
@@ -100,7 +100,7 @@ public extension SecTrust {
   public var verifyTimestamp : CFAbsoluteTime {
     set {
       let newTime = CFDateCreate(nil, newValue)
-      let status = SecTrustSetVerifyDate(self, newTime)
+      let _       = SecTrustSetVerifyDate(self, newTime)
     }
     get {
       return SecTrustGetVerifyTime(self)

@@ -29,8 +29,8 @@ public extension SecCertificate {
 public extension SecCertificate {
   
   public var commonName : String? {
-    var value  : Unmanaged<CFString>?
-    let status = SecCertificateCopyCommonName(self, &value)
+    var value : Unmanaged<CFString>?
+    let _     = SecCertificateCopyCommonName(self, &value)
     return value != nil ? value!.takeRetainedValue() as String : nil
   }
   public var subjectSummary : String? {
@@ -39,8 +39,8 @@ public extension SecCertificate {
   }
   
   public var emailAddresses : [ String ]? {
-    var value  : Unmanaged<CFArray>?
-    let status = SecCertificateCopyEmailAddresses(self, &value)
+    var value : Unmanaged<CFArray>?
+    let _     = SecCertificateCopyEmailAddresses(self, &value)
     if value == nil { return nil }
     
     let array = value!.takeRetainedValue() as! [ String ] // is this really OK?
@@ -49,7 +49,7 @@ public extension SecCertificate {
 
   public var publicKey : SecKey? {
     var valueCopy : Unmanaged<SecKey>?
-    let status    = SecCertificateCopyPublicKey(self, &valueCopy)
+    let _         = SecCertificateCopyPublicKey(self, &valueCopy)
     return valueCopy != nil ? valueCopy!.takeRetainedValue() : nil
   }
   
@@ -57,7 +57,7 @@ public extension SecCertificate {
     // DER-encoded integer (without the tag and length fields)
     var errorRef : Unmanaged<CFError>?
     let value    = SecCertificateCopySerialNumber(self, &errorRef)
-    let error    = errorRef?.takeRetainedValue()
+    let _        = errorRef?.takeRetainedValue()
     return value != nil ? value.takeRetainedValue() as NSData : nil
   }
 }
@@ -89,13 +89,13 @@ public extension SecCertificate {
   public func rawValuesForKeys(keys: [ String ]?) -> [ String : AnyObject ]? {
     var errorRef : Unmanaged<CFError>?
     let value    = SecCertificateCopyValues(self, keys, &errorRef)
-    let error    = errorRef?.takeRetainedValue()
+    let _        = errorRef?.takeRetainedValue()
     if value == nil { return nil }
     return (value.takeRetainedValue() as! [ String : AnyObject ])
   }
 }
 
-extension SecCertificate : Printable {
+extension SecCertificate : CustomStringConvertible {
   
   public var description: String {
     // This is not invoked by println, maybe some special handling for CF objs?

@@ -47,8 +47,8 @@ public extension SecIdentity {
     var identityRef    : Unmanaged<SecIdentity>?
     var actualDomainCF : Unmanaged<CFString>?
     
-    let status = SecIdentityCopySystemIdentity(domain,
-      &identityRef, &actualDomainCF)
+    _ = SecIdentityCopySystemIdentity(domain,
+                                      &identityRef, &actualDomainCF)
     let actualDomain : String? = actualDomainCF != nil
       ? (actualDomainCF!.takeRetainedValue() as String) : nil
     
@@ -59,7 +59,7 @@ public extension SecIdentity {
   }
 }
 
-extension SecIdentity : Printable {
+extension SecIdentity : CustomStringConvertible {
   
   public var description: String {
     // This is not invoked by println, maybe some special handling for CF objs?
