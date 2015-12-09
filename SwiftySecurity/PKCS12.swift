@@ -69,32 +69,30 @@ public typealias PKCS12 = [ PKCS12Item ]
 public func ImportPKCS12(data: NSData, options: [ String : String ]? = nil)
   -> PKCS12?
 {
-  var keyref : Unmanaged<CFArray>?
+  var keyref : CFArray?
   
-  let importStatus = SecPKCS12Import(data, options, &keyref);
+  let importStatus = SecPKCS12Import(data, options ?? [:], &keyref);
   guard importStatus == noErr && keyref != nil else {
     print("PKCS#12 import failed: \(importStatus)")
     return nil
   }
   
-  let items = keyref!.takeRetainedValue() as NSArray
+  let items = keyref! as NSArray
   return items.map { PKCS12Item($0 as! NSDictionary) }
 }
 
 public func ImportPKCS12(path: String, password: String) -> PKCS12? {
   guard let data = NSData(contentsOfFile: path) else { return nil }
   
-  let options = [
-    String(kSecImportExportPassphrase.takeUnretainedValue()) : password
-  ]
+  let options = [ String(kSecImportExportPassphrase) : password ]
   return ImportPKCS12(data, options: options)
 }
 
 extension NSDictionary {
   
-  func secValueForKey<T>(key: Unmanaged<CFString>!) -> T? {
-    let key = String(key.takeUnretainedValue())
-    let v   : AnyObject? = self[key]
+  func secValueForKey<T>(key: CFString) -> T? {
+    let lKey = key as String
+    let v    : AnyObject? = self[lKey]
     if let vv : AnyObject = v { return (vv as! T)}
     return nil
   }

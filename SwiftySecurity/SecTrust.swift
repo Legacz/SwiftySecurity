@@ -18,7 +18,7 @@ public extension SecTrust {
   public subscript(index: Int) -> SecCertificate? {
     // Swift.Unmanaged<ObjectiveC.SecCertificate>
     // TBD: is unretained OK? (Get = Retained or not? :-)
-    return SecTrustGetCertificateAtIndex(self, index).takeUnretainedValue()
+    return SecTrustGetCertificateAtIndex(self, index)
   }
   
   
@@ -29,17 +29,16 @@ public extension SecTrust {
       setAnchorCertificates(newValue)
     }
     get {
-      var valueCopy : Unmanaged<CFArray>?
+      var valueCopy : CFArray?
       let _         = SecTrustCopyCustomAnchorCertificates(self, &valueCopy)
       if valueCopy == nil { return [] }
-      return valueCopy!.takeRetainedValue() as! [ SecCertificate ]
+      return valueCopy! as! [ SecCertificate ]
     }
   }
   
   public var trustOwnCertificatesOnly : Bool? {
     set {
-      let v : Boolean = (newValue ?? false) ? 1 : 0
-      let _ = SecTrustSetAnchorCertificatesOnly(self, v)
+      let _ = SecTrustSetAnchorCertificatesOnly(self, (newValue ?? false))
     }
     get {
       return nil // there is no getter for this?
@@ -59,10 +58,10 @@ public extension SecTrust {
   
   public static var anchorCertificates : [ SecCertificate ] {
     // those are the system certificates
-    var valueCopy : Unmanaged<CFArray>?
+    var valueCopy : CFArray?
     let _         = SecTrustCopyAnchorCertificates(&valueCopy)
     if valueCopy == nil { return [] }
-    return valueCopy!.takeRetainedValue() as! [ SecCertificate ]
+    return valueCopy! as! [ SecCertificate ]
   }
   
   
@@ -91,7 +90,7 @@ public extension SecTrust {
   
   public var publicKey : SecKey? {
     let valueCopy = SecTrustCopyPublicKey(self)
-    return valueCopy != nil ? valueCopy!.takeRetainedValue() : nil
+    return valueCopy != nil ? valueCopy! : nil
   }
   
   

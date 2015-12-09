@@ -12,15 +12,15 @@ public extension SecIdentity {
   // contains a SecKey and an associated SecCertificate
   
   public var certificate : SecCertificate? {
-    var valueCopy : Unmanaged<SecCertificate>?
+    var valueCopy : SecCertificate?
     SecIdentityCopyCertificate(self, &valueCopy)
-    return valueCopy != nil ? valueCopy!.takeRetainedValue() : nil
+    return valueCopy
   }
   
   public var privateKey : SecKey? {
-    var valueCopy : Unmanaged<SecKey>?
+    var valueCopy : SecKey?
     SecIdentityCopyPrivateKey(self, &valueCopy)
-    return valueCopy != nil ? valueCopy!.takeRetainedValue() : nil
+    return valueCopy
   }
   
 }
@@ -35,25 +35,25 @@ public extension SecIdentity {
     // usageKeys:    kSecAttrCanEncrypt and such
     // validIssuers: subject names of allowed issuers
     let identity = SecIdentityCopyPreferred(name         as CFString,
-      usageKeys    as CFArray?,
-      validIssuers as CFArray?)
-    return identity != nil ? identity.takeRetainedValue() : nil
+                                            usageKeys    as CFArray?,
+                                            validIssuers as CFArray?)
+    return identity
   }
   
   public static func systemIdentity(domain: CFString = kSecIdentityDomainDefault)
                   -> ( SecIdentity?, String? )
   {
     // Domains: kSecIdentityDomainDefault, kSecIdentityDomainKerberosKDC
-    var identityRef    : Unmanaged<SecIdentity>?
-    var actualDomainCF : Unmanaged<CFString>?
+    var identityRef    : SecIdentity?
+    var actualDomainCF : CFString?
     
     _ = SecIdentityCopySystemIdentity(domain,
                                       &identityRef, &actualDomainCF)
     let actualDomain : String? = actualDomainCF != nil
-      ? (actualDomainCF!.takeRetainedValue() as String) : nil
+                                 ? (actualDomainCF! as String) : nil
     
     return (
-      identityRef?.takeRetainedValue(),
+      identityRef,
       actualDomain
     )
   }
