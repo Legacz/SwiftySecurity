@@ -30,7 +30,11 @@ public func GetDataFromPEM(s: String, type: String = "CERTIFICATE") -> NSData? {
 public func GetDataFromPEMFile(path: String, type: String = "CERTIFICATE")
          -> NSData?
 {
-  let s = NSString(contentsOfFile: path, encoding: NSUTF8StringEncoding,
-                   error: nil);
+  let s: NSString?
+  do {
+    s = try NSString(contentsOfFile: path, encoding: NSUTF8StringEncoding)
+  } catch _ {
+    s = nil
+  };
   return s != nil ? GetDataFromPEM(s! as String, type: type) : nil
 }

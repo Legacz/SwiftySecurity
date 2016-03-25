@@ -10,7 +10,7 @@ import Foundation
 
 // https://developer.apple.com/library/mac/documentation/Security/Reference/certifkeytrustservices/index.html#//apple_ref/c/func/SecTrustGetTrustResult
 
-public struct PKCS12Item: Printable {
+public struct PKCS12Item {
   
   let storage : NSDictionary
   
@@ -38,7 +38,7 @@ public struct PKCS12Item: Printable {
   }
 }
 
-extension PKCS12Item: Printable {
+extension PKCS12Item: CustomStringConvertible {
   
   public var description: String {
     var s = "<PKCS12Item:"
@@ -66,35 +66,34 @@ extension PKCS12Item: Printable {
 // PKCS12 is just a wrapper of items
 public typealias PKCS12 = [ PKCS12Item ]
 
-public func ImportPKCS12(data: NSData, options: [ String : String ]? = nil)
+public func ImportPKCS12(data: NSData, options: [ String : String ] = [:])
   -> PKCS12?
 {
-  var keyref : Unmanaged<CFArray>?
+  var keyref : CFArray?
   
   let importStatus = SecPKCS12Import(data, options, &keyref);
-  if importStatus != noErr || keyref == nil {
-    println("PKCS#12 import failed: \(importStatus)")
+  guard importStatus == noErr && keyref != nil else {
+    print("PKCS#12 import failed: \(importStatus)")
     return nil
   }
   
-  let items = keyref!.takeRetainedValue() as NSArray
-  return map(items) { PKCS12Item($0 as! NSDictionary) }
+  let items = keyref! as NSArray
+  return items.map { PKCS12Item($0 as! NSDictionary) }
 }
 
 public func ImportPKCS12(path: String, password: String) -> PKCS12? {
-  let data = NSData(contentsOfFile: path)
-  if data == nil { return nil }
+  guard let data = NSData(contentsOfFile: path) else { return nil }
   
   let options = [
-    String(kSecImportExportPassphrase.takeUnretainedValue()) : password
+    String(kSecImportExportPassphrase) : password
   ]
-  return ImportPKCS12(data!, options: options)
+  return ImportPKCS12(data, options: options)
 }
 
 extension NSDictionary {
-  
-  func secValueForKey<T>(key: Unmanaged<CFString>!) -> T? {
-    let key = String(key.takeUnretainedValue())
+
+  func secValueForKey<T>(key: CFString) -> T? {
+    let key = String(key)
     let v   : AnyObject? = self[key]
     if let vv : AnyObject = v { return (vv as! T)}
     return nil

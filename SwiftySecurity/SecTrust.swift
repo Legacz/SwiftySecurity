@@ -18,7 +18,7 @@ public extension SecTrust {
   public subscript(index: Int) -> SecCertificate? {
     // Swift.Unmanaged<ObjectiveC.SecCertificate>
     // TBD: is unretained OK? (Get = Retained or not? :-)
-    return SecTrustGetCertificateAtIndex(self, index).takeUnretainedValue()
+    return SecTrustGetCertificateAtIndex(self, index)
   }
   
   
@@ -29,17 +29,16 @@ public extension SecTrust {
       setAnchorCertificates(newValue)
     }
     get {
-      var valueCopy : Unmanaged<CFArray>?
-      let status = SecTrustCopyCustomAnchorCertificates(self, &valueCopy)
+      var valueCopy : CFArray?
+      let _         = SecTrustCopyCustomAnchorCertificates(self, &valueCopy)
       if valueCopy == nil { return [] }
-      return valueCopy!.takeRetainedValue() as! [ SecCertificate ]
+      return valueCopy! as! [ SecCertificate ]
     }
   }
   
   public var trustOwnCertificatesOnly : Bool? {
     set {
-      let v : Boolean = (newValue ?? false) ? 1 : 0
-      let status = SecTrustSetAnchorCertificatesOnly(self, v)
+      let _ = SecTrustSetAnchorCertificatesOnly(self, newValue ?? false)
     }
     get {
       return nil // there is no getter for this?
@@ -59,10 +58,10 @@ public extension SecTrust {
   
   public static var anchorCertificates : [ SecCertificate ] {
     // those are the system certificates
-    var valueCopy : Unmanaged<CFArray>?
-    let status = SecTrustCopyAnchorCertificates(&valueCopy)
+    var valueCopy : CFArray?
+    let _         = SecTrustCopyAnchorCertificates(&valueCopy)
     if valueCopy == nil { return [] }
-    return valueCopy!.takeRetainedValue() as! [ SecCertificate ]
+    return valueCopy! as! [ SecCertificate ]
   }
   
   
@@ -90,8 +89,7 @@ public extension SecTrust {
   /* keys */
   
   public var publicKey : SecKey? {
-    let valueCopy = SecTrustCopyPublicKey(self)
-    return valueCopy != nil ? valueCopy!.takeRetainedValue() : nil
+    return SecTrustCopyPublicKey(self)
   }
   
   
@@ -100,7 +98,7 @@ public extension SecTrust {
   public var verifyTimestamp : CFAbsoluteTime {
     set {
       let newTime = CFDateCreate(nil, newValue)
-      let status = SecTrustSetVerifyDate(self, newTime)
+      let _       = SecTrustSetVerifyDate(self, newTime)
     }
     get {
       return SecTrustGetVerifyTime(self)
