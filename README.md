@@ -8,10 +8,13 @@ Note: This requires Cocoa stuff, it is not a pure Swift framework.
 
 ###Targets
 
-Uses Swift v2b1 (aka Xcode 7).
+Update for Swift 0.2.2 (aka Xcode 7.3).
 
 The project includes a single target:
 - SwiftySecurity
+
+Note: The Swift mapping of the Security framework changed quite a lot between
+versions.
 
 ###Why?!
 
